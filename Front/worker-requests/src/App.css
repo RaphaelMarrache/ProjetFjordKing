@@ -1,0 +1,114 @@
+#root {
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px;
+  text-align: left;
+}
+
+.app-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  margin-bottom: 24px;
+  border-radius: 18px;
+  border: 1px solid var(--stroke);
+  background: linear-gradient(120deg, rgba(15, 111, 123, 0.18), rgba(248, 197, 106, 0.2)), var(--surface);
+  box-shadow: var(--shadow);
+  animation: tide-in 0.6s ease both;
+}
+
+.brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.brand-logo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
+.brand {
+  margin: 0;
+  font-size: 2rem;
+  letter-spacing: 0.03em;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.entry-choice {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.entry-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.card,
+.app-page {
+  background: var(--surface);
+  border: 1px solid var(--stroke);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  animation: float-in 0.5s ease both;
+}
+
+.app-page {
+  backdrop-filter: blur(2px);
+}
+
+@keyframes float-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 720px) {
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .brand-logo {
+    height: 40px;
+  }
+}
