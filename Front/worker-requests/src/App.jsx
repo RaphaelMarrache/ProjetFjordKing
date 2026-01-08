@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import logoFjord from "./assets/logoFjord.jpeg";
 import "./App.css";
 
-const API_BASE = "http://127.0.0.1:8000"; // backend FastAPI
+const API_BASE = "https://projetfjordking.onrender.com"; // backend FastAPI
 
 // ================== LOGIN TRAVAILLEUR ==================
 function WorkerLogin({ onLogin }) {
