@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, Header, UploadFile, File, Form
+﻿from fastapi import FastAPI, HTTPException, Depends, Header, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -12,19 +12,19 @@ from pathlib import Path
 from typing import Optional, List, Dict
 from datetime import datetime, date, timedelta
 
-# Clé d’accès admin (simple pour ton prototype)
+# ClÃ© dâ€™accÃ¨s admin (simple pour ton prototype)
 ADMIN_TOKEN = "admin123"   # tu peux changer la valeur
 
 def require_admin(Authorization: str = Header(None)):
     """
-    Vérifie que la requête possède le bon token admin.
-    Exemple côté front : headers: { Authorization: 'Bearer admin123' }
+    VÃ©rifie que la requÃªte possÃ¨de le bon token admin.
+    Exemple cÃ´tÃ© front : headers: { Authorization: 'Bearer admin123' }
     """
     if not Authorization:
         raise HTTPException(status_code=401, detail="Token manquant")
     token = Authorization.replace("Bearer ", "")
     if token != ADMIN_TOKEN:
-        raise HTTPException(status_code=403, detail="Accès refusé")
+        raise HTTPException(status_code=403, detail="AccÃ¨s refusÃ©")
     return True
 
 
@@ -32,7 +32,8 @@ app = FastAPI()
 
 origins = [
     "http://localhost:5173",
-    "http://127.0.0.1:5173","https://projet-fjord-king-fls11xvf6-marrache-raphaels-projects.vercel.app"
+    "http://127.0.0.1:5173",
+    "https://projet-fjord-king.vercel.app","projet-fjord-king.vercel.app"
 
 ]
 
@@ -47,9 +48,9 @@ BASE_DIR = Path(__file__).parent
 EXCEL_FILE = BASE_DIR / "employes_exemple.xlsx"
 UPLOAD_DIR = BASE_DIR / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
-# Liste en mémoire pour stocker les demandes
+# Liste en mÃ©moire pour stocker les demandes
 REQUESTS = []
-REQUEST_COUNTER = 1  # pour générer un ID unique à chaque demande
+REQUEST_COUNTER = 1  # pour gÃ©nÃ©rer un ID unique Ã  chaque demande
 
 _employees_cache: List[Dict] = []
 _employees_mtime: float | None = None
@@ -58,7 +59,7 @@ def _read_employees_from_excel() -> List[Dict]:
     if not EXCEL_FILE.exists():
         raise RuntimeError(f"Fichier Excel introuvable: {EXCEL_FILE}")
     wb = openpyxl.load_workbook(EXCEL_FILE)
-    ws = wb.active  # 1ère feuille
+    ws = wb.active  # 1Ã¨re feuille
 
     headers = [str(c.value).strip() if c.value else "" for c in ws[1]]
     # On attend: Nom, Prenom, Email, Secteur, Code, CongesCumules, (Telephone optionnel)
@@ -77,7 +78,7 @@ def _read_employees_from_excel() -> List[Dict]:
         tel = str(row[col["Telephone"]]).strip() if "Telephone" in col and row[col["Telephone"]] else None
 
         employees.append({
-            "full_name": f"{prenom} {nom}",   # ⚠️ ICI: identifiant saisi "Prenom Nom"
+            "full_name": f"{prenom} {nom}",   # âš ï¸ ICI: identifiant saisi "Prenom Nom"
             "email": email,
             "sector": secteur,
             "code": code,
@@ -97,31 +98,31 @@ def get_employees() -> List[Dict]:
     _ensure_employees_loaded()
     return _employees_cache
 
-# ================== "BASE" EMPLOYÉS (simule ton Excel) ==================
+# ================== "BASE" EMPLOYÃ‰S (simule ton Excel) ==================
 
 BASE_DIR = Path(__file__).parent
-EXCEL_FILE = BASE_DIR / "employes_exemple.xlsx"  # le fichier que tu as placé à côté de main.py
+EXCEL_FILE = BASE_DIR / "employes_exemple.xlsx"  # le fichier que tu as placÃ© Ã  cÃ´tÃ© de main.py
 
 
 def load_employees_from_excel() -> list[dict]:
     if not EXCEL_FILE.exists():
-        raise RuntimeError(f"Fichier Excel des employés introuvable : {EXCEL_FILE}")
+        raise RuntimeError(f"Fichier Excel des employÃ©s introuvable : {EXCEL_FILE}")
 
     wb = openpyxl.load_workbook(EXCEL_FILE)
-    ws = wb.active  # première feuille
+    ws = wb.active  # premiÃ¨re feuille
 
     employees: list[dict] = []
 
     first = True
     for row in ws.iter_rows(values_only=True):
         if first:
-            # On saute la ligne d'en-tête : Nom, Prenom, Email, Secteur, Code
+            # On saute la ligne d'en-tÃªte : Nom, Prenom, Email, Secteur, Code
             first = False
             continue
 
         nom, prenom, email, secteur, code, CongesCumules, Telephone,  = row
 
-        # sécurité au cas où il y a des lignes vides
+        # sÃ©curitÃ© au cas oÃ¹ il y a des lignes vides
         if not nom or not prenom:
             continue
 
@@ -154,7 +155,7 @@ def set_employee_cumules_in_excel(full_name: str, new_value: int) -> None:
             ws.cell(row=r, column=col["CongesCumules"] + 1).value = int(new_value)
             wb.save(EXCEL_FILE)
             return
-    raise RuntimeError(f"Employé '{full_name}' introuvable pour mise à jour.")
+    raise RuntimeError(f"EmployÃ© '{full_name}' introuvable pour mise Ã  jour.")
 
 
 # ================== MODELES ==================
@@ -171,7 +172,7 @@ class RequestCreate(BaseModel):
     start_date: date
     end_date: date
     reason: Optional[str] = None
-    # champs "anciens" qu'on garde pour compatibilité / affichage
+    # champs "anciens" qu'on garde pour compatibilitÃ© / affichage
     title: Optional[str] = None
     description: Optional[str] = None
     urgency: Optional[str] = "normal"
@@ -243,7 +244,7 @@ def _norm_text(value) -> str:
     if value is None:
         return ""
     text = str(value).strip().lower()
-    # Remove accents to avoid encoding mismatches (terminée vs terminÇ¸e).
+    # Remove accents to avoid encoding mismatches (terminÃ©e vs terminÃ‡Â¸e).
     text = unicodedata.normalize("NFKD", text)
     return "".join(ch for ch in text if ord(ch) < 128)
 
@@ -273,7 +274,7 @@ def _build_sector_day_counts(exclude_req=None):
     return counts
 
 def _recompute_cumules_for(full_name: str) -> int:
-    # somme des jours de congés ACCEPTÉS pour cet employé
+    # somme des jours de congÃ©s ACCEPTÃ‰S pour cet employÃ©
     total = 0
     for r in REQUESTS:
         if r.get("worker_name", "").strip().lower() != full_name.strip().lower():
@@ -284,9 +285,9 @@ def _recompute_cumules_for(full_name: str) -> int:
             if not start or not end:
                 continue
             total += _days_inclusive(start, end)
-    # écriture Excel
+    # Ã©criture Excel
     set_employee_cumules_in_excel(full_name, total)
-    # invalider le cache pour refléter la MAJ instantanément
+    # invalider le cache pour reflÃ©ter la MAJ instantanÃ©ment
     global _employees_mtime
     _employees_mtime = None
     return total
@@ -339,8 +340,8 @@ async def create_sick_request(
     start_date: str = Form(...),
     end_date: str = Form(...),
     reason: str = Form(None),
-    title: str = Form("Congé maladie"),
-    description: str = Form("Congé maladie"),
+    title: str = Form("CongÃ© maladie"),
+    description: str = Form("CongÃ© maladie"),
     urgency: str = Form("normal"),
     attachment: UploadFile | None = File(None),
 ):
@@ -477,7 +478,7 @@ def admin_download_attachment(rid: int):
     path = req.get("attachment_path")
     name = req.get("attachment_name")
     if not path or not name:
-        raise HTTPException(404, "Aucune pièce jointe")
+        raise HTTPException(404, "Aucune piÃ¨ce jointe")
     return FileResponse(path, filename=name)
 
 
@@ -485,7 +486,7 @@ def admin_download_attachment(rid: int):
 @app.get("/admin/cumules")
 def admin_cumules():
     employees = get_employees()  # relit si besoin via cache (inclut secteur + cumules)
-    # ne renvoyer que ce qui sert à l’écran
+    # ne renvoyer que ce qui sert Ã  lâ€™Ã©cran
     return [
         {
             "full_name": e["full_name"],
@@ -497,7 +498,7 @@ def admin_cumules():
 def get_all_cumules(_=Depends(get_manager_token)):
     # On part du fichier Excel (colonne CongesCumules)
     emps = get_employees()
-    # Fournir aussi une "référence calculée" pour contrôle visuel
+    # Fournir aussi une "rÃ©fÃ©rence calculÃ©e" pour contrÃ´le visuel
     computed: Dict[str, int] = {}
     for e in emps:
         computed[e["full_name"]] = 0
@@ -515,8 +516,8 @@ def get_all_cumules(_=Depends(get_manager_token)):
             "full_name": e["full_name"],
             "email": e["email"],
             "sector": e["sector"],
-            "cumules_excel": e["cumules"],   # valeur officielle (éditable) – ce que voit le RH
-            "cumules_calc": computed.get(e["full_name"], 0),  # info pour vérif
+            "cumules_excel": e["cumules"],   # valeur officielle (Ã©ditable) â€“ ce que voit le RH
+            "cumules_calc": computed.get(e["full_name"], 0),  # info pour vÃ©rif
         }
         for e in emps
     ]
@@ -527,7 +528,7 @@ def admin_update_cumules(full_name: str, payload: dict):
     wb = openpyxl.load_workbook(EXCEL_FILE)
     ws = wb.active
 
-    # localiser les colonnes par en-têtes
+    # localiser les colonnes par en-tÃªtes
     headers = [str(c.value or "").strip().lower() for c in ws[1]]
     col_name = headers.index("nom")
     col_first = headers.index("prenom")
@@ -535,7 +536,7 @@ def admin_update_cumules(full_name: str, payload: dict):
     if col_cum is None:
         raise HTTPException(400, "Colonne 'CongesCumules' absente dans Excel")
 
-    # trouver la ligne employé (match "Prenom Nom")
+    # trouver la ligne employÃ© (match "Prenom Nom")
     target_row = None
     for row in ws.iter_rows(min_row=2):
         nom = str(row[col_name].value or "").strip()
@@ -545,7 +546,7 @@ def admin_update_cumules(full_name: str, payload: dict):
             target_row = row
             break
     if not target_row:
-        raise HTTPException(404, "Employé introuvable")
+        raise HTTPException(404, "EmployÃ© introuvable")
 
     target_row[col_cum].value = days
     wb.save(EXCEL_FILE)
@@ -556,7 +557,7 @@ def admin_update_cumules(full_name: str, payload: dict):
     return {"full_name": full_name, "cumules_excel": int(e.get("conges_cumules", 0) or 0)}
 def set_cumules_for_employee(full_name: str, body: CumuleUpdate, _=Depends(get_manager_token)):
     set_employee_cumules_in_excel(full_name, int(body.days))
-    # invalide le cache pour refléter
+    # invalide le cache pour reflÃ©ter
     global _employees_mtime
     _employees_mtime = None
     return {"ok": True, "full_name": full_name, "days": int(body.days)}
@@ -566,6 +567,7 @@ def admin_employee_history(full_name: str):
     rs = [r for r in REQUESTS if r.get("worker_name","").lower() == full_name.strip().lower()]
     rs.sort(key=lambda x: (x.get("start_date") or "", x.get("id") or 0))
     return rs
+
 
 
 
