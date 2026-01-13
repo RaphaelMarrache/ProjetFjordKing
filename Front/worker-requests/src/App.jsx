@@ -156,7 +156,7 @@ function VacationForm({ worker }) {
             marginTop: 15,
             textAlign: "center",
             fontWeight: "bold",
-            color: message.startsWith("âœ…") ? "green" : "red",
+            color: message.startsWith("âœ…")  "green" : "red",
           }}
         >
           {message}
@@ -277,7 +277,7 @@ function SickLeaveForm({ worker }) {
             marginTop: 15,
             textAlign: "center",
             fontWeight: "bold",
-            color: message.startsWith("âœ…") ? "green" : "red",
+            color: message.startsWith("âœ…")  "green" : "red",
           }}
         >
           {message}
@@ -295,7 +295,7 @@ function MyRequests({ worker }) {
 
   useEffect(() => {
     const fetchRequests = async () => {
-      if (!worker?.full_name) {
+      if (!worker.full_name) {
         setLoading(false);
         return;
       }
@@ -309,8 +309,8 @@ function MyRequests({ worker }) {
       } catch (err) {
         console.error(
           "Worker fetchRequests error:",
-          err?.response?.status,
-          err?.response?.data || err
+          err.response.status,
+          err.response.data || err
         );
         setError("Erreur lors du chargement des demandes");
       } finally {
@@ -342,9 +342,9 @@ function MyRequests({ worker }) {
           <p style={{ margin: 0 }}>
             <b>Type :</b>{" "}
             {r.category === "vacation"
-              ? "Congés"
+               "Congés"
               : r.category === "sick_leave"
-              ? "ArrÃªt maladie"
+               "ArrÃªt maladie"
               : r.category}
           </p>
           <p style={{ margin: "6px 0" }}>
@@ -356,9 +356,9 @@ function MyRequests({ worker }) {
               style={{
                 color:
                   r.status === "terminÃ©e"
-                    ? "green"
+                     "green"
                     : r.status === "refusÃ©e"
-                    ? "red"
+                     "red"
                     : "orange",
                 fontWeight: "bold",
               }}
@@ -406,8 +406,8 @@ function WorkerArea({ worker }) {
           style={{
             padding: "8px 16px",
             borderRadius: 4,
-            border: tab === "vacation" ? "2px solid black" : "1px solid #ccc",
-            backgroundColor: tab === "vacation" ? "#f0f0f0" : "white",
+            border: tab === "vacation"  "2px solid black" : "1px solid #ccc",
+            backgroundColor: tab === "vacation"  "#f0f0f0" : "white",
           }}
         >
           Congés
@@ -417,8 +417,8 @@ function WorkerArea({ worker }) {
           style={{
             padding: "8px 16px",
             borderRadius: 4,
-            border: tab === "sick" ? "2px solid black" : "1px solid #ccc",
-            backgroundColor: tab === "sick" ? "#f0f0f0" : "white",
+            border: tab === "sick"  "2px solid black" : "1px solid #ccc",
+            backgroundColor: tab === "sick"  "#f0f0f0" : "white",
           }}
         >
           ArrÃªt maladie
@@ -429,8 +429,8 @@ function WorkerArea({ worker }) {
             padding: "8px 16px",
             borderRadius: 4,
             border:
-              tab === "mes_demandes" ? "2px solid black" : "1px solid #ccc",
-            backgroundColor: tab === "mes_demandes" ? "#f0f0f0" : "white",
+              tab === "mes_demandes"  "2px solid black" : "1px solid #ccc",
+            backgroundColor: tab === "mes_demandes"  "#f0f0f0" : "white",
           }}
         >
           Mes demandes
@@ -568,7 +568,7 @@ function AdminCumules({ token, onSelectEmployee }) {
               <tr key={r.full_name}>
                 <td
                   style={{ borderBottom: "1px solid #f0f0f0", padding: 8, cursor: "pointer", textDecoration:"underline" }}
-                  onClick={() => onSelectEmployee?.(r.full_name)}
+                  onClick={() => onSelectEmployee.(r.full_name)}
                   title="Voir lâ€™historique des demandes"
                 >
                   {r.full_name}
@@ -581,7 +581,7 @@ function AdminCumules({ token, onSelectEmployee }) {
                     value={r.edit}
                     onChange={(e) =>
                       setRows(prev =>
-                        prev.map(x => x.full_name === r.full_name ? { ...x, edit: e.target.value } : x)
+                        prev.map(x => x.full_name === r.full_name  { ...x, edit: e.target.value } : x)
                       )
                     }
                     style={{ width: 100 }}
@@ -627,7 +627,7 @@ function AdminDashboard({ token, onLogout }) {
   function getMonday(d) {
     const date = new Date(d);
     const day = date.getDay(); // 0 dimanche, 1 lundi, ...
-    const diff = (day === 0 ? -6 : 1) - day; // ramÃ¨ne Ã  lundi
+    const diff = (day === 0  -6 : 1) - day; // ramÃ¨ne Ã  lundi
     date.setDate(date.getDate() + diff);
     date.setHours(0, 0, 0, 0);
     return date;
@@ -650,8 +650,8 @@ function AdminDashboard({ token, onLogout }) {
     } catch (err) {
       console.error(
         "Admin fetchRequests error:",
-        err?.response?.status,
-        err?.response?.data || err
+        err.response.status,
+        err.response.data || err
       );
       setMessage("Erreur lors du chargement des demandes");
     }
@@ -669,7 +669,7 @@ function AdminDashboard({ token, onLogout }) {
 
   const handleChangeField = (id, field, value) => {
     setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, [field]: value } : r))
+      prev.map((r) => (r.id === id  { ...r, [field]: value } : r))
     );
   };
 
@@ -682,17 +682,17 @@ function AdminDashboard({ token, onLogout }) {
         { status: req.status, manager_comment: req.manager_comment },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      if (res.data?.warning) {
+      if (res.data.warning) {
         setMessage(res.data.warning);
         window.alert(res.data.warning);
       } else {
         setMessage(`Demande ${id} mise à jour`);
       }
-      await fetchRequests(false); // <- recharger la liste côté g?rant
+      await fetchRequests(false); // <- recharger la liste côté grant
     } catch (err) {
       console.error(err);
-      const detail = err?.response?.data?.detail;
-      if (err?.response?.status === 409 && detail?.message) {
+      const detail = err.response.data.detail;
+      if (err.response.status === 409 && detail.message) {
         setMessage(detail.message);
         window.alert(detail.message);
         await fetchRequests(false);
@@ -851,24 +851,24 @@ function AdminDashboard({ token, onLogout }) {
                       fontSize: 12,
                       minHeight: 40,
                       backgroundColor: isConflict
-                        ? "rgba(240, 107, 95, 0.2)"
+                         "rgba(240, 107, 95, 0.2)"
                         : "transparent",
                       borderLeft: isConflict
-                        ? "2px solid rgba(240, 107, 95, 0.6)"
+                         "2px solid rgba(240, 107, 95, 0.6)"
                         : "2px solid transparent",
                     }}
                   >
-                    {names.length === 0 ? (
-                      <span style={{ color: "#888" }}>Tous pr?sents</span>
+                    {names.length === 0  (
+                      <span style={{ color: "#888" }}>Tous prsents</span>
                     ) : (
-                      <span style={isConflict ? { fontWeight: "bold" } : null}>
+                      <span style={isConflict  { fontWeight: "bold" } : null}>
                         {names.map((entry, index) => (
                           <span
                             key={`${entry.name}-${index}`}
-                            style={entry.overLimit ? { color: "#c0392b" } : null}
+                            style={entry.overLimit  { color: "#c0392b" } : null}
                           >
                             {entry.name}
-                            {index < names.length - 1 ? ", " : ""}
+                            {index < names.length - 1  ", " : ""}
                           </span>
                         ))}{" "}
                         absent(s)
@@ -918,7 +918,7 @@ function AdminDashboard({ token, onLogout }) {
             padding: "6px 12px",
             borderRadius: 4,
             border:
-              viewMode === "list" ? "2px solid black" : "1px solid #ccc",
+              viewMode === "list"  "2px solid black" : "1px solid #ccc",
                
           }}
         >
@@ -930,7 +930,7 @@ function AdminDashboard({ token, onLogout }) {
             padding: "6px 12px",
             borderRadius: 4,
             border:
-              viewMode === "calendar" ? "2px solid black" : "1px solid #ccc",
+              viewMode === "calendar"  "2px solid black" : "1px solid #ccc",
           }}
         >
           Vue calendrier (hebdomadaire)
@@ -941,7 +941,7 @@ function AdminDashboard({ token, onLogout }) {
             padding: "6px 12px",
             borderRadius: 4,
             border:
-              viewMode === "cumules" ? "2px solid black" : "1px solid #ccc",
+              viewMode === "cumules"  "2px solid black" : "1px solid #ccc",
           }}
         >
           Congés cumulÃ©s
@@ -981,9 +981,9 @@ function AdminDashboard({ token, onLogout }) {
                   <span>
                     Type :{" "}
                     {r.category === "vacation"
-                      ? "Congés"
+                       "Congés"
                       : r.category === "sick_leave"
-                      ? "ArrÃªt maladie"
+                       "ArrÃªt maladie"
                       : r.category || "-"}
                   </span>
                 </div>
@@ -1075,7 +1075,7 @@ function AdminDashboard({ token, onLogout }) {
                 </button>
               </div>
 
-              {historyRows.length === 0 ? (
+              {historyRows.length === 0  (
                 <p style={{ marginTop: 8 }}>Aucune demande enregistrÃ©e.</p>
               ) : (
                 <ul style={{ marginTop: 8 }}>
@@ -1083,13 +1083,13 @@ function AdminDashboard({ token, onLogout }) {
                     <li key={r.id} style={{ marginBottom: 6 }}>
                       <b>#{r.id}</b> â€”{" "}
                       {r.category === "vacation"
-                        ? "Congés"
+                         "Congés"
                         : r.category === "sick_leave"
-                        ? "ArrÃªt maladie"
+                         "ArrÃªt maladie"
                         : r.category}
                       {" : "}du <b>{r.start_date}</b> au <b>{r.end_date}</b> â€”
                       statut <b>{r.status}</b>
-                      {r.reason ? ` â€” raison: ${r.reason}` : ""}
+                      {r.reason  ` â€” raison: ${r.reason}` : ""}
                     </li>
                   ))}
                 </ul>
@@ -1155,7 +1155,7 @@ export default function App() {
       {view === null && (
         <div className="card entry-choice">
           <h2 style={{ textAlign: "center", marginTop: 0 }}>
-            Vous Ãªtes ?
+            Vous Ãªtes 
           </h2>
           <div className="entry-actions">
             <button onClick={handleSelectWorker}>Travailleur</button>
