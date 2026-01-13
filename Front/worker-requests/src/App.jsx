@@ -64,7 +64,7 @@ function WorkerLogin({ onLogin }) {
   );
 }
 
-// ================== FORMULAIRE CONGÃ‰S ==================
+// ================== FORMULAIRE CONGÉS ==================
 function VacationForm({ worker }) {
   const [form, setForm] = useState({
     startDate: "",
@@ -97,7 +97,7 @@ function VacationForm({ worker }) {
 
     try {
       const res = await axios.post(`${API_BASE}/requests`, payload);
-      setMessage(`âœ… Demande de congés envoyÃ©e (ID : ${res.data.id})`);
+      setMessage(`✅ Demande de congés envoyée (ID : ${res.data.id})`);
       setForm({
         startDate: "",
         endDate: "",
@@ -105,7 +105,7 @@ function VacationForm({ worker }) {
       });
     } catch (err) {
       console.error(err);
-      setMessage("âŒ Erreur lors de lâ€™envoi de la demande de congés");
+      setMessage("❌ Erreur lors de l’envoi de la demande de congés");
     }
   };
 
@@ -113,10 +113,10 @@ function VacationForm({ worker }) {
     <div className="card" style={{ maxWidth: 600, margin: "0 auto", padding: 20 }}>
       <h3>Demande de congés</h3>
       <p>
-        EmployÃ© : <b>{worker.full_name}</b> (secteur {worker.sector})
+        Employé : <b>{worker.full_name}</b> (secteur {worker.sector})
       </p>
       <form onSubmit={handleSubmit}>
-        <label>Date de dÃ©but :</label>
+        <label>Date de début :</label>
         <input
           type="date"
           name="startDate"
@@ -156,7 +156,7 @@ function VacationForm({ worker }) {
             marginTop: 15,
             textAlign: "center",
             fontWeight: "bold",
-            color: message.startsWith("âœ…")  "green" : "red",
+            color: message.startsWith("✅") ? "green" : "red",
           }}
         >
           {message}
@@ -166,7 +166,7 @@ function VacationForm({ worker }) {
   );
 }
 
-// ================== FORMULAIRE ARRÃŠT MALADIE ==================
+// ================== FORMULAIRE ARRÊT MALADIE ==================
 function SickLeaveForm({ worker }) {
   const [form, setForm] = useState({
     startDate: "",
@@ -209,7 +209,7 @@ function SickLeaveForm({ worker }) {
         formData.append("attachment", file);
       }
       const res = await axios.post(`${API_BASE}/requests/sick`, formData);
-      setMessage(`âœ… Congé maladie envoyÃ© (ID : ${res.data.id})`);
+      setMessage(`✅ Congé maladie envoyé (ID : ${res.data.id})`);
       setForm({
         startDate: "",
         endDate: "",
@@ -218,18 +218,18 @@ function SickLeaveForm({ worker }) {
       setFile(null);
     } catch (err) {
       console.error(err);
-      setMessage("âŒ Erreur lors de lâ€™envoi du congé maladie");
+      setMessage("❌ Erreur lors de l’envoi du congé maladie");
     }
   };
 
   return (
     <div className="card" style={{ maxWidth: 600, margin: "0 auto", padding: 20 }}>
-      <h3>Demande d'arrÃªt maladie</h3>
+      <h3>Demande d'arrêt maladie</h3>
       <p>
-        EmployÃ© : <b>{worker.full_name}</b> (secteur {worker.sector})
+        Employé : <b>{worker.full_name}</b> (secteur {worker.sector})
       </p>
       <form onSubmit={handleSubmit}>
-        <label>Date de dÃ©but :</label>
+        <label>Date de début :</label>
         <input
           type="date"
           name="startDate"
@@ -258,7 +258,7 @@ function SickLeaveForm({ worker }) {
           style={{ width: "100%", marginBottom: 10 }}
         />
 
-        <label>Photo de lâ€™arrÃªt maladie (prototype) :</label>
+        <label>Photo de l’arrêt maladie (prototype) :</label>
         <input
           type="file"
           accept="image/*"
@@ -267,7 +267,7 @@ function SickLeaveForm({ worker }) {
         />
 
         <button type="submit" style={{ width: "100%", padding: 10 }}>
-          Envoyer l'arrÃªt maladie
+          Envoyer l'arrêt maladie
         </button>
       </form>
 
@@ -277,7 +277,7 @@ function SickLeaveForm({ worker }) {
             marginTop: 15,
             textAlign: "center",
             fontWeight: "bold",
-            color: message.startsWith("âœ…")  "green" : "red",
+            color: message.startsWith("✅") ? "green" : "red",
           }}
         >
           {message}
@@ -295,7 +295,7 @@ function MyRequests({ worker }) {
 
   useEffect(() => {
     const fetchRequests = async () => {
-      if (!worker.full_name) {
+      if (!worker?.full_name) {
         setLoading(false);
         return;
       }
@@ -309,8 +309,8 @@ function MyRequests({ worker }) {
       } catch (err) {
         console.error(
           "Worker fetchRequests error:",
-          err.response.status,
-          err.response.data || err
+          err?.response?.status,
+          err?.response?.data || err
         );
         setError("Erreur lors du chargement des demandes");
       } finally {
@@ -321,10 +321,10 @@ function MyRequests({ worker }) {
     fetchRequests();
   }, [worker]);
 
-  if (loading) return <p>Chargementâ€¦</p>;
+  if (loading) return <p>Chargement…</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
   if (requests.length === 0)
-    return <p>Aucune demande enregistrÃ©e pour lâ€™instant.</p>;
+    return <p>Aucune demande enregistrée pour l’instant.</p>;
 
   return (
     <div style={{ marginTop: 20 }}>
@@ -342,9 +342,9 @@ function MyRequests({ worker }) {
           <p style={{ margin: 0 }}>
             <b>Type :</b>{" "}
             {r.category === "vacation"
-               "Congés"
+              ? "Congés"
               : r.category === "sick_leave"
-               "ArrÃªt maladie"
+              ? "Arrêt maladie"
               : r.category}
           </p>
           <p style={{ margin: "6px 0" }}>
@@ -355,10 +355,10 @@ function MyRequests({ worker }) {
             <span
               style={{
                 color:
-                  r.status === "terminÃ©e"
-                     "green"
-                    : r.status === "refusÃ©e"
-                     "red"
+                  r.status === "terminée"
+                    ? "green"
+                    : r.status === "refusée"
+                    ? "red"
                     : "orange",
                 fontWeight: "bold",
               }}
@@ -382,14 +382,14 @@ function WorkerArea({ worker }) {
 
   if (!worker) {
     return (
-      <p style={{ textAlign: "center" }}>Erreur : aucun travailleur connectÃ©.</p>
+      <p style={{ textAlign: "center" }}>Erreur : aucun travailleur connecté.</p>
     );
   }
 
   return (
     <div>
       <p style={{ textAlign: "center" }}>
-        ConnectÃ© en tant que <b>{worker.full_name}</b> (secteur {worker.sector})
+        Connecté en tant que <b>{worker.full_name}</b> (secteur {worker.sector})
       </p>
 
       <div
@@ -406,8 +406,8 @@ function WorkerArea({ worker }) {
           style={{
             padding: "8px 16px",
             borderRadius: 4,
-            border: tab === "vacation"  "2px solid black" : "1px solid #ccc",
-            backgroundColor: tab === "vacation"  "#f0f0f0" : "white",
+            border: tab === "vacation" ? "2px solid black" : "1px solid #ccc",
+            backgroundColor: tab === "vacation" ? "#f0f0f0" : "white",
           }}
         >
           Congés
@@ -417,11 +417,11 @@ function WorkerArea({ worker }) {
           style={{
             padding: "8px 16px",
             borderRadius: 4,
-            border: tab === "sick"  "2px solid black" : "1px solid #ccc",
-            backgroundColor: tab === "sick"  "#f0f0f0" : "white",
+            border: tab === "sick" ? "2px solid black" : "1px solid #ccc",
+            backgroundColor: tab === "sick" ? "#f0f0f0" : "white",
           }}
         >
-          ArrÃªt maladie
+          Arrêt maladie
         </button>
         <button
           onClick={() => setTab("mes_demandes")}
@@ -429,8 +429,8 @@ function WorkerArea({ worker }) {
             padding: "8px 16px",
             borderRadius: 4,
             border:
-              tab === "mes_demandes"  "2px solid black" : "1px solid #ccc",
-            backgroundColor: tab === "mes_demandes"  "#f0f0f0" : "white",
+              tab === "mes_demandes" ? "2px solid black" : "1px solid #ccc",
+            backgroundColor: tab === "mes_demandes" ? "#f0f0f0" : "white",
           }}
         >
           Mes demandes
@@ -503,7 +503,7 @@ function AdminLogin({ onLogin }) {
   );
 }
 
-// ================== TABLEAU DE BORD GERANT (CUMULÃ‰S) ==================
+// ================== TABLEAU DE BORD GERANT (CUMULÉS) ==================
 function AdminCumules({ token, onSelectEmployee }) {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -519,7 +519,7 @@ function AdminCumules({ token, onSelectEmployee }) {
       setRows(res.data.map(r => ({ ...r, edit: r.cumules_excel })));
     } catch (e) {
       console.error(e);
-      setMsg("Erreur de chargement des congés cumulÃ©s");
+      setMsg("Erreur de chargement des congés cumulés");
     } finally {
       setLoading(false);
     }
@@ -538,8 +538,8 @@ function AdminCumules({ token, onSelectEmployee }) {
         { days: Number(value) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setMsg(`Valeur mise Ã  jour pour ${full_name}`);
-      // recharger depuis Excel pour Ãªtre sÃ»r
+      setMsg(`Valeur mise à jour pour ${full_name}`);
+      // recharger depuis Excel pour être sûr
       fetchCumules();
     } catch (e) {
       console.error(e);
@@ -547,7 +547,7 @@ function AdminCumules({ token, onSelectEmployee }) {
     }
   };
 
-  if (loading) return <p>Chargementâ€¦</p>;
+  if (loading) return <p>Chargement…</p>;
 
   return (
     <div style={{ marginTop: 10 }}>
@@ -556,9 +556,9 @@ function AdminCumules({ token, onSelectEmployee }) {
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr>
-              <th style={{ borderBottom: "1px solid #ddd", textAlign: "left", padding: 8 }}>EmployÃ©</th>
+              <th style={{ borderBottom: "1px solid #ddd", textAlign: "left", padding: 8 }}>Employé</th>
               <th style={{ borderBottom: "1px solid #ddd", textAlign: "left", padding: 8 }}>Secteur</th>
-              <th style={{ borderBottom: "1px solid #ddd", textAlign: "left", padding: 8 }}>CumulÃ© (Excel)</th>
+              <th style={{ borderBottom: "1px solid #ddd", textAlign: "left", padding: 8 }}>Cumulé (Excel)</th>
               <th style={{ borderBottom: "1px solid #ddd", textAlign: "left", padding: 8 }}>Modifier</th>
               <th style={{ borderBottom: "1px solid #ddd", textAlign: "left", padding: 8 }}></th>
             </tr>
@@ -568,8 +568,8 @@ function AdminCumules({ token, onSelectEmployee }) {
               <tr key={r.full_name}>
                 <td
                   style={{ borderBottom: "1px solid #f0f0f0", padding: 8, cursor: "pointer", textDecoration:"underline" }}
-                  onClick={() => onSelectEmployee.(r.full_name)}
-                  title="Voir lâ€™historique des demandes"
+                  onClick={() => onSelectEmployee?.(r.full_name)}
+                  title="Voir l’historique des demandes"
                 >
                   {r.full_name}
                 </td>
@@ -581,7 +581,7 @@ function AdminCumules({ token, onSelectEmployee }) {
                     value={r.edit}
                     onChange={(e) =>
                       setRows(prev =>
-                        prev.map(x => x.full_name === r.full_name  { ...x, edit: e.target.value } : x)
+                        prev.map(x => x.full_name === r.full_name ? { ...x, edit: e.target.value } : x)
                       )
                     }
                     style={{ width: 100 }}
@@ -627,7 +627,7 @@ function AdminDashboard({ token, onLogout }) {
   function getMonday(d) {
     const date = new Date(d);
     const day = date.getDay(); // 0 dimanche, 1 lundi, ...
-    const diff = (day === 0  -6 : 1) - day; // ramÃ¨ne Ã  lundi
+    const diff = (day === 0 ? -6 : 1) - day; // ramène à lundi
     date.setDate(date.getDate() + diff);
     date.setHours(0, 0, 0, 0);
     return date;
@@ -641,17 +641,17 @@ function AdminDashboard({ token, onLogout }) {
     try {
       const res = await axios.get(`${API_BASE}/admin/requests`, {
       headers: { Authorization: `Bearer ${token}` },
-      params: { archived },            // ðŸ‘ˆ cache les traitÃ©es
+      params: { archived },            // 👈 cache les traitées
       });
       setRequests(res.data || []);
       if (!res.data || res.data.length === 0) {
-        console.log("Admin: aucune demande non archivÃ©e renvoyÃ©e");
+        console.log("Admin: aucune demande non archivée renvoyée");
       }
     } catch (err) {
       console.error(
         "Admin fetchRequests error:",
-        err.response.status,
-        err.response.data || err
+        err?.response?.status,
+        err?.response?.data || err
       );
       setMessage("Erreur lors du chargement des demandes");
     }
@@ -669,7 +669,7 @@ function AdminDashboard({ token, onLogout }) {
 
   const handleChangeField = (id, field, value) => {
     setRequests((prev) =>
-      prev.map((r) => (r.id === id  { ...r, [field]: value } : r))
+      prev.map((r) => (r.id === id ? { ...r, [field]: value } : r))
     );
   };
 
@@ -682,23 +682,23 @@ function AdminDashboard({ token, onLogout }) {
         { status: req.status, manager_comment: req.manager_comment },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      if (res.data.warning) {
+      if (res.data?.warning) {
         setMessage(res.data.warning);
         window.alert(res.data.warning);
       } else {
-        setMessage(`Demande ${id} mise à jour`);
+        setMessage(`Demande ${id} mise ? jour`);
       }
-      await fetchRequests(false); // <- recharger la liste côté grant
+      await fetchRequests(false); // <- recharger la liste c?t? g?rant
     } catch (err) {
       console.error(err);
-      const detail = err.response.data.detail;
-      if (err.response.status === 409 && detail.message) {
+      const detail = err?.response?.data?.detail;
+      if (err?.response?.status === 409 && detail?.message) {
         setMessage(detail.message);
         window.alert(detail.message);
         await fetchRequests(false);
         return;
       }
-      setMessage("Erreur lors de la mise à jour");
+      setMessage("Erreur lors de la mise ? jour");
     }
   };
 
@@ -721,7 +721,7 @@ function AdminDashboard({ token, onLogout }) {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error(err);
-      setMessage("Erreur lors du tÃ©lÃ©chargement de la piÃ¨ce jointe");
+      setMessage("Erreur lors du téléchargement de la pièce jointe");
     }
   };
 
@@ -733,7 +733,7 @@ function AdminDashboard({ token, onLogout }) {
     const map = {}; // { "YYYY-MM-DD": { "1": [{ name, overLimit }], ... } }
 
     requests.forEach((r) => {
-      if (r.status !== "terminÃ©e") return; // uniquement demandes acceptÃ©es
+      if (r.status !== "terminée") return; // uniquement demandes acceptées
       if (!r.start_date || !r.end_date) return;
       const sector = r.sector || "1";
       const overLimit = Boolean(r.over_limit);
@@ -795,11 +795,11 @@ function AdminDashboard({ token, onLogout }) {
             alignItems: "center",
           }}
         >
-          <button onClick={() => changeWeek(-1)}>â—€ Semaine prÃ©cÃ©dente</button>
+          <button onClick={() => changeWeek(-1)}>◀ Semaine précédente</button>
           <strong>
             Semaine du {formatDate(days[0])} au {formatDate(days[6])}
           </strong>
-          <button onClick={() => changeWeek(1)}>Semaine suivante â–¶</button>
+          <button onClick={() => changeWeek(1)}>Semaine suivante ▶</button>
         </div>
 
         <div
@@ -851,24 +851,24 @@ function AdminDashboard({ token, onLogout }) {
                       fontSize: 12,
                       minHeight: 40,
                       backgroundColor: isConflict
-                         "rgba(240, 107, 95, 0.2)"
+                        ? "rgba(240, 107, 95, 0.2)"
                         : "transparent",
                       borderLeft: isConflict
-                         "2px solid rgba(240, 107, 95, 0.6)"
+                        ? "2px solid rgba(240, 107, 95, 0.6)"
                         : "2px solid transparent",
                     }}
                   >
-                    {names.length === 0  (
-                      <span style={{ color: "#888" }}>Tous prsents</span>
+                    {names.length === 0 ? (
+                      <span style={{ color: "#888" }}>Tous présents</span>
                     ) : (
-                      <span style={isConflict  { fontWeight: "bold" } : null}>
+                      <span style={isConflict ? { fontWeight: "bold" } : null}>
                         {names.map((entry, index) => (
                           <span
                             key={`${entry.name}-${index}`}
-                            style={entry.overLimit  { color: "#c0392b" } : null}
+                            style={entry.overLimit ? { color: "#c0392b" } : null}
                           >
                             {entry.name}
-                            {index < names.length - 1  ", " : ""}
+                            {index < names.length - 1 ? ", " : ""}
                           </span>
                         ))}{" "}
                         absent(s)
@@ -894,7 +894,7 @@ function AdminDashboard({ token, onLogout }) {
         }}
       >
         <h2>Tableau de bord gérant</h2>
-        <button onClick={onLogout}>Se dÃ©connecter</button>
+        <button onClick={onLogout}>Se déconnecter</button>
       </div>
 
       <div style={{ marginBottom: 10 }}>
@@ -902,7 +902,7 @@ function AdminDashboard({ token, onLogout }) {
           onClick={() =>
             fetchRequests(viewMode === "calendar")
           }
-        >RafraÃ®chir les demandes</button>
+        >Rafraîchir les demandes</button>
       </div>
 
       <div
@@ -918,7 +918,7 @@ function AdminDashboard({ token, onLogout }) {
             padding: "6px 12px",
             borderRadius: 4,
             border:
-              viewMode === "list"  "2px solid black" : "1px solid #ccc",
+              viewMode === "list" ? "2px solid black" : "1px solid #ccc",
                
           }}
         >
@@ -930,7 +930,7 @@ function AdminDashboard({ token, onLogout }) {
             padding: "6px 12px",
             borderRadius: 4,
             border:
-              viewMode === "calendar"  "2px solid black" : "1px solid #ccc",
+              viewMode === "calendar" ? "2px solid black" : "1px solid #ccc",
           }}
         >
           Vue calendrier (hebdomadaire)
@@ -941,10 +941,10 @@ function AdminDashboard({ token, onLogout }) {
             padding: "6px 12px",
             borderRadius: 4,
             border:
-              viewMode === "cumules"  "2px solid black" : "1px solid #ccc",
+              viewMode === "cumules" ? "2px solid black" : "1px solid #ccc",
           }}
         >
-          Congés cumulÃ©s
+          Congés cumulés
         </button>
       </div>
 
@@ -981,14 +981,14 @@ function AdminDashboard({ token, onLogout }) {
                   <span>
                     Type :{" "}
                     {r.category === "vacation"
-                       "Congés"
+                      ? "Congés"
                       : r.category === "sick_leave"
-                       "ArrÃªt maladie"
+                      ? "Arrêt maladie"
                       : r.category || "-"}
                   </span>
                 </div>
                 <p>
-                  <b>EmployÃ© :</b> {r.worker_name} ({r.worker_email})
+                  <b>Employé :</b> {r.worker_name} ({r.worker_email})
                   <br />
                   <b>Secteur :</b> {r.sector || "-"} <br />
                   <b>Du :</b> {r.start_date} <b>au</b> {r.end_date}
@@ -998,12 +998,12 @@ function AdminDashboard({ token, onLogout }) {
                 </p>
                 {r.attachment_name && (
                   <p>
-                    <b>PiÃ¨ce jointe :</b>{" "}
+                    <b>Pièce jointe :</b>{" "}
                     <button
                       type="button"
                       onClick={() => downloadAttachment(r.id, r.attachment_name)}
                     >
-                      TÃ©lÃ©charger
+                      Télécharger
                     </button>
                   </p>
                 )}
@@ -1017,8 +1017,8 @@ function AdminDashboard({ token, onLogout }) {
                   >
                     <option value="nouvelle">Nouvelle</option>
                     <option value="en_cours">En cours</option>
-                    <option value="terminÃ©e">TerminÃ©e</option>
-                    <option value="refusÃ©e">RefusÃ©e</option>
+                    <option value="terminée">Terminée</option>
+                    <option value="refusée">Refusée</option>
                   </select>
                 </p>
                 <p>
@@ -1063,7 +1063,7 @@ function AdminDashboard({ token, onLogout }) {
                 }}
               >
                 <h3 style={{ margin: 0 }}>
-                  Historique des demandes â€” {historyFor}
+                  Historique des demandes — {historyFor}
                 </h3>
                 <button
                   onClick={() => {
@@ -1075,21 +1075,21 @@ function AdminDashboard({ token, onLogout }) {
                 </button>
               </div>
 
-              {historyRows.length === 0  (
-                <p style={{ marginTop: 8 }}>Aucune demande enregistrÃ©e.</p>
+              {historyRows.length === 0 ? (
+                <p style={{ marginTop: 8 }}>Aucune demande enregistrée.</p>
               ) : (
                 <ul style={{ marginTop: 8 }}>
                   {historyRows.map((r) => (
                     <li key={r.id} style={{ marginBottom: 6 }}>
-                      <b>#{r.id}</b> â€”{" "}
+                      <b>#{r.id}</b> —{" "}
                       {r.category === "vacation"
-                         "Congés"
+                        ? "Congés"
                         : r.category === "sick_leave"
-                         "ArrÃªt maladie"
+                        ? "Arrêt maladie"
                         : r.category}
-                      {" : "}du <b>{r.start_date}</b> au <b>{r.end_date}</b> â€”
+                      {" : "}du <b>{r.start_date}</b> au <b>{r.end_date}</b> —
                       statut <b>{r.status}</b>
-                      {r.reason  ` â€” raison: ${r.reason}` : ""}
+                      {r.reason ? ` — raison: ${r.reason}` : ""}
                     </li>
                   ))}
                 </ul>
@@ -1155,7 +1155,7 @@ export default function App() {
       {view === null && (
         <div className="card entry-choice">
           <h2 style={{ textAlign: "center", marginTop: 0 }}>
-            Vous Ãªtes 
+            Vous êtes ?
           </h2>
           <div className="entry-actions">
             <button onClick={handleSelectWorker}>Travailleur</button>
@@ -1181,6 +1181,4 @@ export default function App() {
     </div>
   );
 }
-
-
 
