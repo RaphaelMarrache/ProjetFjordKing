@@ -34,8 +34,9 @@ origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "https://projet-fjord-king.vercel.app",
+    "https://projet-fjord-king-git-main-marrache-raphaels-projects.vercel.app",
+    "https://projet-fjord-king-cmvq0fx63-marrache-raphaels-projects.vercel.app",
 ]
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -566,6 +567,7 @@ def admin_employee_history(full_name: str):
     rs = [r for r in REQUESTS if r.get("worker_name","").lower() == full_name.strip().lower()]
     rs.sort(key=lambda x: (x.get("start_date") or "", x.get("id") or 0))
     return rs
+
 
 
 
