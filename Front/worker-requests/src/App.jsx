@@ -90,14 +90,14 @@ function VacationForm({ worker }) {
       start_date: form.startDate,
       end_date: form.endDate,
       reason: form.reason || null,
-      title: "Demande de congÃ©s",
-      description: form.reason || "Demande de congÃ©s",
+      title: "Demande de congés",
+      description: form.reason || "Demande de congés",
       urgency: "normal",
     };
 
     try {
       const res = await axios.post(`${API_BASE}/requests`, payload);
-      setMessage(`âœ… Demande de congÃ©s envoyÃ©e (ID : ${res.data.id})`);
+      setMessage(`âœ… Demande de congés envoyÃ©e (ID : ${res.data.id})`);
       setForm({
         startDate: "",
         endDate: "",
@@ -105,13 +105,13 @@ function VacationForm({ worker }) {
       });
     } catch (err) {
       console.error(err);
-      setMessage("âŒ Erreur lors de lâ€™envoi de la demande de congÃ©s");
+      setMessage("âŒ Erreur lors de lâ€™envoi de la demande de congés");
     }
   };
 
   return (
     <div className="card" style={{ maxWidth: 600, margin: "0 auto", padding: 20 }}>
-      <h3>Demande de congÃ©s</h3>
+      <h3>Demande de congés</h3>
       <p>
         EmployÃ© : <b>{worker.full_name}</b> (secteur {worker.sector})
       </p>
@@ -146,7 +146,7 @@ function VacationForm({ worker }) {
         />
 
         <button type="submit" style={{ width: "100%", padding: 10 }}>
-          Envoyer la demande de congÃ©s
+          Envoyer la demande de congés
         </button>
       </form>
 
@@ -189,7 +189,7 @@ function SickLeaveForm({ worker }) {
     e.preventDefault();
     setMessage("");
 
-    let description = form.reason || "CongÃ© maladie";
+    let description = form.reason || "Congé maladie";
     if (file) {
       description += ` (fichier : ${file.name})`;
     }
@@ -202,14 +202,14 @@ function SickLeaveForm({ worker }) {
       formData.append("start_date", form.startDate);
       formData.append("end_date", form.endDate);
       formData.append("reason", form.reason || "");
-      formData.append("title", "CongÃ© maladie");
+      formData.append("title", "Congé maladie");
       formData.append("description", description);
       formData.append("urgency", "normal");
       if (file) {
         formData.append("attachment", file);
       }
       const res = await axios.post(`${API_BASE}/requests/sick`, formData);
-      setMessage(`âœ… CongÃ© maladie envoyÃ© (ID : ${res.data.id})`);
+      setMessage(`âœ… Congé maladie envoyÃ© (ID : ${res.data.id})`);
       setForm({
         startDate: "",
         endDate: "",
@@ -218,7 +218,7 @@ function SickLeaveForm({ worker }) {
       setFile(null);
     } catch (err) {
       console.error(err);
-      setMessage("âŒ Erreur lors de lâ€™envoi du congÃ© maladie");
+      setMessage("âŒ Erreur lors de lâ€™envoi du congé maladie");
     }
   };
 
@@ -342,7 +342,7 @@ function MyRequests({ worker }) {
           <p style={{ margin: 0 }}>
             <b>Type :</b>{" "}
             {r.category === "vacation"
-              ? "CongÃ©s"
+              ? "Congés"
               : r.category === "sick_leave"
               ? "ArrÃªt maladie"
               : r.category}
@@ -368,7 +368,7 @@ function MyRequests({ worker }) {
           </p>
           {r.manager_comment && (
             <p style={{ marginTop: 6 }}>
-              <b>Commentaire du gÃ©rant :</b> {r.manager_comment}
+              <b>Commentaire du gérant :</b> {r.manager_comment}
             </p>
           )}
         </div>
@@ -410,7 +410,7 @@ function WorkerArea({ worker }) {
             backgroundColor: tab === "vacation" ? "#f0f0f0" : "white",
           }}
         >
-          CongÃ©s
+          Congés
         </button>
         <button
           onClick={() => setTab("sick")}
@@ -467,7 +467,7 @@ function AdminLogin({ onLogin }) {
 
   return (
     <div className="card" style={{ maxWidth: 400, margin: "0 auto", padding: 20 }}>
-      <h2 style={{ textAlign: "center" }}>Connexion gÃ©rant</h2>
+      <h2 style={{ textAlign: "center" }}>Connexion gérant</h2>
       <form onSubmit={handleSubmit}>
         <label>Nom d'utilisateur :</label>
         <input
@@ -519,7 +519,7 @@ function AdminCumules({ token, onSelectEmployee }) {
       setRows(res.data.map(r => ({ ...r, edit: r.cumules_excel })));
     } catch (e) {
       console.error(e);
-      setMsg("Erreur de chargement des congÃ©s cumulÃ©s");
+      setMsg("Erreur de chargement des congés cumulÃ©s");
     } finally {
       setLoading(false);
     }
@@ -686,9 +686,9 @@ function AdminDashboard({ token, onLogout }) {
         setMessage(res.data.warning);
         window.alert(res.data.warning);
       } else {
-        setMessage(`Demande ${id} mise ? jour`);
+        setMessage(`Demande ${id} mise à jour`);
       }
-      await fetchRequests(false); // <- recharger la liste c?t? g?rant
+      await fetchRequests(false); // <- recharger la liste côté g?rant
     } catch (err) {
       console.error(err);
       const detail = err?.response?.data?.detail;
@@ -698,7 +698,7 @@ function AdminDashboard({ token, onLogout }) {
         await fetchRequests(false);
         return;
       }
-      setMessage("Erreur lors de la mise ? jour");
+      setMessage("Erreur lors de la mise à jour");
     }
   };
 
@@ -893,7 +893,7 @@ function AdminDashboard({ token, onLogout }) {
           marginBottom: 10,
         }}
       >
-        <h2>Tableau de bord gÃ©rant</h2>
+        <h2>Tableau de bord gérant</h2>
         <button onClick={onLogout}>Se dÃ©connecter</button>
       </div>
 
@@ -944,7 +944,7 @@ function AdminDashboard({ token, onLogout }) {
               viewMode === "cumules" ? "2px solid black" : "1px solid #ccc",
           }}
         >
-          CongÃ©s cumulÃ©s
+          Congés cumulÃ©s
         </button>
       </div>
 
@@ -981,7 +981,7 @@ function AdminDashboard({ token, onLogout }) {
                   <span>
                     Type :{" "}
                     {r.category === "vacation"
-                      ? "CongÃ©s"
+                      ? "Congés"
                       : r.category === "sick_leave"
                       ? "ArrÃªt maladie"
                       : r.category || "-"}
@@ -1022,7 +1022,7 @@ function AdminDashboard({ token, onLogout }) {
                   </select>
                 </p>
                 <p>
-                  <b>Commentaire gÃ©rant :</b>
+                  <b>Commentaire gérant :</b>
                   <br />
                   <textarea
                     rows={3}
@@ -1083,7 +1083,7 @@ function AdminDashboard({ token, onLogout }) {
                     <li key={r.id} style={{ marginBottom: 6 }}>
                       <b>#{r.id}</b> â€”{" "}
                       {r.category === "vacation"
-                        ? "CongÃ©s"
+                        ? "Congés"
                         : r.category === "sick_leave"
                         ? "ArrÃªt maladie"
                         : r.category}
@@ -1159,7 +1159,7 @@ export default function App() {
           </h2>
           <div className="entry-actions">
             <button onClick={handleSelectWorker}>Travailleur</button>
-            <button onClick={handleSelectAdmin}>GÃ©rant</button>
+            <button onClick={handleSelectAdmin}>Gérant</button>
           </div>
         </div>
       )}
@@ -1181,5 +1181,6 @@ export default function App() {
     </div>
   );
 }
+
 
 
