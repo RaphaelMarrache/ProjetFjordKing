@@ -139,6 +139,7 @@ def _read_employees_from_excel() -> List[Dict]:
         secteur = str(row[col["Secteur"]] or "").strip()
         code = str(row[col["Code"]] or "").strip()
         cumules = int(row[col.get("CongesCumules", -1)] or 0) if "CongesCumules" in col else 0
+        solde = int(row[col.get(\"Solde\", -1)] or 0) if \"Solde\" in col else 0
         tel = str(row[col["Telephone"]]).strip() if "Telephone" in col and row[col["Telephone"]] else None
 
         employees.append({
@@ -147,6 +148,7 @@ def _read_employees_from_excel() -> List[Dict]:
             "sector": secteur,
             "code": code,
             "cumules": cumules,
+            \"solde\": solde,
             "telephone": tel,
         })
     return employees
@@ -366,11 +368,21 @@ def worker_login(data: WorkerLogin):
     identifier = data.identifier.strip().lower()
     parts = [p for p in identifier.split() if p]
     flipped = " ".join(reversed(parts)) if len(parts) >= 2 else identifier
-    code = data.code.strip()
+    def _normalize_code(value: str) -> str:
+        raw = str(value or "").strip()
+        if raw.endswith(".0"):
+            raw = raw[:-2]
+        return raw
+    code = _normalize_code(data.code)
     for e in employees:
         full_name = e["full_name"].strip().lower()
-        if (full_name == identifier or full_name == flipped) and e["code"] == code:
-            return {"full_name": e["full_name"], "email": e["email"], "sector": e["sector"]}
+        if (full_name == identifier or full_name == flipped) and _normalize_code(e["code"]) == code:
+            return {
+                "full_name": e["full_name"],
+                "email": e["email"],
+                "sector": e["sector"],
+                "solde": e.get("solde", 0),
+            }
     raise HTTPException(status_code=401, detail="Identifiants incorrects")
 
 

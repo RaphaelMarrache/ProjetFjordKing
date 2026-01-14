@@ -5,7 +5,7 @@ import "./App.css";
 
 const API_BASE = "https://projetfjordking.onrender.com"; // backend FastAPI
 
-// ================== LOGIN EMPLOYE ==================
+// ================== LOGIN TRAVAILLEUR ==================
 function WorkerLogin({ onLogin }) {
   const [form, setForm] = useState({ identifier: "", code: "" });
   const [error, setError] = useState("");
@@ -28,7 +28,7 @@ function WorkerLogin({ onLogin }) {
 
   return (
     <div className="card" style={{ maxWidth: 400, margin: "0 auto", padding: 20 }}>
-      <h2>Identification </h2>
+      <h2>Identification travailleur</h2>
       <form onSubmit={handleSubmit}>
         <label>Identifiant :</label>
         <input
@@ -287,7 +287,7 @@ function SickLeaveForm({ worker }) {
   );
 }
 
-// ================== ESPACE EMPLOYE ==================
+// ================== ESPACE TRAVAILLEUR ==================
 function MyRequests({ worker }) {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -368,7 +368,7 @@ function MyRequests({ worker }) {
           </p>
           {r.manager_comment && (
             <p style={{ marginTop: 6 }}>
-              <b>Commentaire de l'employeur :</b> {r.manager_comment}
+              <b>Commentaire du gérant :</b> {r.manager_comment}
             </p>
           )}
         </div>
@@ -382,14 +382,14 @@ function WorkerArea({ worker }) {
 
   if (!worker) {
     return (
-      <p style={{ textAlign: "center" }}>Erreur : aucun employé connecté.</p>
+      <p style={{ textAlign: "center" }}>Erreur : aucun travailleur connecté.</p>
     );
   }
 
   return (
     <div>
       <p style={{ textAlign: "center" }}>
-        Connecté en tant que <b>{worker.full_name}</b> (secteur {worker.sector})
+        Connecté en tant que <b>{worker.full_name}</b> (secteur {worker.sector} | solde {worker.solde})
       </p>
 
       <div
@@ -467,7 +467,7 @@ function AdminLogin({ onLogin }) {
 
   return (
     <div className="card" style={{ maxWidth: 400, margin: "0 auto", padding: 20 }}>
-      <h2 style={{ textAlign: "center" }}>Connexion </h2>
+      <h2 style={{ textAlign: "center" }}>Connexion gérant</h2>
       <form onSubmit={handleSubmit}>
         <label>Nom d'utilisateur :</label>
         <input
@@ -893,7 +893,7 @@ function AdminDashboard({ token, onLogout }) {
           marginBottom: 10,
         }}
       >
-        <h2>Tableau de bord </h2>
+        <h2>Tableau de bord gérant</h2>
         <button onClick={onLogout}>Se déconnecter</button>
       </div>
 
@@ -1022,7 +1022,7 @@ function AdminDashboard({ token, onLogout }) {
                   </select>
                 </p>
                 <p>
-                  <b>Commentaire Employeur :</b>
+                  <b>Commentaire gérant :</b>
                   <br />
                   <textarea
                     rows={3}
@@ -1158,8 +1158,8 @@ export default function App() {
             Vous êtes ?
           </h2>
           <div className="entry-actions">
-            <button onClick={handleSelectWorker}>Employé</button>
-            <button onClick={handleSelectAdmin}>Employeur</button>
+            <button onClick={handleSelectWorker}>Travailleur</button>
+            <button onClick={handleSelectAdmin}>Gérant</button>
           </div>
         </div>
       )}
