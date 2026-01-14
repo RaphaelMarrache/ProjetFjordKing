@@ -149,7 +149,10 @@ def _read_employees_from_excel() -> List[Dict]:
             except ValueError:
                 return 0
         cumules = _safe_int(row[col.get("CongesCumules", -1)]) if "CongesCumules" in col else 0
+        acquis = _safe_int(row[col.get("acquis", -1)]) if "acquis" in col else 0
         solde = _safe_int(row[col.get("Solde", -1)]) if "Solde" in col else 0
+        if solde == 0 and acquis:
+            solde = acquis - cumules
         tel = str(row[col["Telephone"]]).strip() if "Telephone" in col and row[col["Telephone"]] else None
 
         employees.append({
