@@ -11,6 +11,13 @@ import openpyxl
 from pathlib import Path
 from typing import Optional, List, Dict
 from datetime import datetime, date, timedelta
+import os
+import json
+from io import BytesIO
+
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
 
 # ClÃ© dâ€™accÃ¨s admin (simple pour ton prototype)
 ADMIN_TOKEN = "admin123"   # tu peux changer la valeur
@@ -48,6 +55,61 @@ BASE_DIR = Path(__file__).parent
 EXCEL_FILE = BASE_DIR / "employes_exemple.xlsx"
 UPLOAD_DIR = BASE_DIR / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
+
+GOOGLE_DRIVE_FILE_ID = os.getenv("GOOGLE_DRIVE_FILE_ID")
+GOOGLE_SERVICE_ACCOUNT_JSON = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
+GOOGLE_SERVICE_ACCOUNT_JSON_PATH = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON_PATH")
+
+def _get_drive_service():
+    if not GOOGLE_DRIVE_FILE_ID:
+        return None
+    creds = None
+    if GOOGLE_SERVICE_ACCOUNT_JSON:
+        info = json.loads(GOOGLE_SERVICE_ACCOUNT_JSON)
+        creds = service_account.Credentials.from_service_account_info(
+            info, scopes=["https://www.googleapis.com/auth/drive"]
+        )
+    elif GOOGLE_SERVICE_ACCOUNT_JSON_PATH:
+        creds = service_account.Credentials.from_service_account_file(
+            GOOGLE_SERVICE_ACCOUNT_JSON_PATH, scopes=["https://www.googleapis.com/auth/drive"]
+        )
+    if not creds:
+        return None
+    return build("drive", "v3", credentials=creds)
+
+def _download_excel_from_drive():
+    if not GOOGLE_DRIVE_FILE_ID:
+        return
+    service = _get_drive_service()
+    if not service:
+        return
+    try:
+        request = service.files().get_media(fileId=GOOGLE_DRIVE_FILE_ID)
+        fh = BytesIO()
+        downloader = MediaIoBaseDownload(fh, request)
+        done = False
+        while not done:
+            _, done = downloader.next_chunk()
+        EXCEL_FILE.write_bytes(fh.getvalue())
+    except Exception as exc:
+        print(f"Drive download failed: {exc}")
+
+def _upload_excel_to_drive():
+    if not GOOGLE_DRIVE_FILE_ID or not EXCEL_FILE.exists():
+        return
+    service = _get_drive_service()
+    if not service:
+        return
+    try:
+        media = MediaFileUpload(
+            str(EXCEL_FILE),
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+        service.files().update(fileId=GOOGLE_DRIVE_FILE_ID, media_body=media).execute()
+    except Exception as exc:
+        print(f"Drive upload failed: {exc}")
+
+_download_excel_from_drive()
 # Liste en mÃ©moire pour stocker les demandes
 REQUESTS = []
 REQUEST_COUNTER = 1  # pour gÃ©nÃ©rer un ID unique Ã  chaque demande
@@ -56,6 +118,8 @@ _employees_cache: List[Dict] = []
 _employees_mtime: float | None = None
 
 def _read_employees_from_excel() -> List[Dict]:
+    if not EXCEL_FILE.exists():
+        _download_excel_from_drive()
     if not EXCEL_FILE.exists():
         raise RuntimeError(f"Fichier Excel introuvable: {EXCEL_FILE}")
     wb = openpyxl.load_workbook(EXCEL_FILE)
@@ -154,6 +218,7 @@ def set_employee_cumules_in_excel(full_name: str, new_value: int) -> None:
         if f"{prenom} {nom}".strip().lower() == full_name.strip().lower():
             ws.cell(row=r, column=col["CongesCumules"] + 1).value = int(new_value)
             wb.save(EXCEL_FILE)
+            _upload_excel_to_drive()
             return
     raise RuntimeError(f"EmployÃ© '{full_name}' introuvable pour mise Ã  jour.")
 
@@ -550,6 +615,7 @@ def admin_update_cumules(full_name: str, payload: dict):
 
     target_row[col_cum].value = days
     wb.save(EXCEL_FILE)
+    _upload_excel_to_drive()
 
     # relire pour renvoyer la valeur officielle
     employees = get_employees()  # relit si besoin via cache (inclut secteur + cumules)
