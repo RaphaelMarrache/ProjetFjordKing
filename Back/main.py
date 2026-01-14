@@ -139,7 +139,7 @@ def _read_employees_from_excel() -> List[Dict]:
         secteur = str(row[col["Secteur"]] or "").strip()
         code = str(row[col["Code"]] or "").strip()
         cumules = int(row[col.get("CongesCumules", -1)] or 0) if "CongesCumules" in col else 0
-        solde = int(row[col.get(\"Solde\", -1)] or 0) if \"Solde\" in col else 0
+        solde = int(row[col.get("Solde", -1)] or 0) if "Solde" in col else 0
         tel = str(row[col["Telephone"]]).strip() if "Telephone" in col and row[col["Telephone"]] else None
 
         employees.append({
@@ -148,7 +148,7 @@ def _read_employees_from_excel() -> List[Dict]:
             "sector": secteur,
             "code": code,
             "cumules": cumules,
-            \"solde\": solde,
+            "solde": solde,
             "telephone": tel,
         })
     return employees
