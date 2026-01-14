@@ -153,6 +153,7 @@ def _read_employees_from_excel() -> List[Dict]:
 
 def _ensure_employees_loaded():
     global _employees_cache, _employees_mtime
+    _download_excel_from_drive()
     mtime = EXCEL_FILE.stat().st_mtime if EXCEL_FILE.exists() else None
     if _employees_mtime != mtime:
         _employees_cache = _read_employees_from_excel()
