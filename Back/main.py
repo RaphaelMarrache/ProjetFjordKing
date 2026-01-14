@@ -370,7 +370,8 @@ def worker_login(data: WorkerLogin):
     flipped = " ".join(reversed(parts)) if len(parts) >= 2 else identifier
     def _normalize_code(value: str) -> str:
         raw = str(value or "").strip()
-        if raw.endswith(".0"):
+        raw = raw.replace(",", ".")
+        if raw.endswith(".0") and raw[:-2].isdigit():
             raw = raw[:-2]
         return raw
     code = _normalize_code(data.code)
