@@ -604,7 +604,8 @@ function AdminCumules({ token, onSelectEmployee }) {
 function AdminDashboard({ token, onLogout }) {
   const [requests, setRequests] = useState([]);
   const [message, setMessage] = useState("");
-  const [viewMode, setViewMode] = useState("list"); // "list" | "calendar" | "cumules"
+  const [viewMode, setViewMode] = useState("list"); // "list" | "calendar" | "month" | "cumules"
+  const [sectorTotals, setSectorTotals] = useState({});
 
   const [historyFor, setHistoryFor] = useState(null); // full_name ou null
   const [historyRows, setHistoryRows] = useState([]);
@@ -633,6 +634,7 @@ function AdminDashboard({ token, onLogout }) {
     return date;
   }
   const [weekStart, setWeekStart] = useState(getMonday(today));
+  const [monthStart, setMonthStart] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
 
   const sectors = ["coupe-parage", "Reconstitution", "OS OT tarama", "commandes", "Autres"];
 
@@ -657,12 +659,34 @@ function AdminDashboard({ token, onLogout }) {
     }
   };
 
+  const fetchSectorTotals = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/admin/cumules`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const totals = {};
+      res.data.forEach((row) => {
+        const sector = row.sector || "Autres";
+        totals[sector] = (totals[sector] || 0) + 1;
+      });
+      setSectorTotals(totals);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     if (viewMode === "list") {
       fetchRequests(false);
     }
     if (viewMode === "calendar") {
       fetchRequests(true);
+    }
+    if (viewMode === "month") {
+      fetchRequests(true);
+    }
+    if (viewMode === "calendar" || viewMode === "month") {
+      fetchSectorTotals();
     }
   }, [viewMode]);
 
@@ -777,6 +801,25 @@ function AdminDashboard({ token, onLogout }) {
 
   const dayNames = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
+  function getMonthDays(startDate) {
+    const days = [];
+    const year = startDate.getFullYear();
+    const month = startDate.getMonth();
+    const date = new Date(year, month, 1);
+    while (date.getMonth() === month) {
+      days.push(new Date(date));
+      date.setDate(date.getDate() + 1);
+    }
+    return days;
+  }
+
+  function changeMonth(delta) {
+    const d = new Date(monthStart);
+    d.setMonth(d.getMonth() + delta);
+    d.setDate(1);
+    setMonthStart(d);
+  }
+
   function renderWeeklyCalendar() {
     const days = [];
     for (let i = 0; i < 7; i++) {
@@ -858,6 +901,149 @@ function AdminDashboard({ token, onLogout }) {
                         : "2px solid transparent",
                     }}
                   >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        fontSize: 11,
+                        marginBottom: 2,
+                        color: "#1f3864",
+                      }}
+                    >
+                      <span
+                        style={{
+                          border: "1px solid #cbd5e1",
+                          borderRadius: 10,
+                          padding: "1px 6px",
+                          background: "#f8fafc",
+                        }}
+                        title="Disponibles"
+                      >
+                        {typeof sectorTotals[sec] === "number"
+                          ? Math.max(sectorTotals[sec] - names.length, 0)
+                          : "-"}
+                      </span>
+                    </div>
+                    {names.length === 0 ? (
+                      <span style={{ color: "#888" }}>Tous présents</span>
+                    ) : (
+                      <span style={isConflict ? { fontWeight: "bold" } : null}>
+                        {names.map((entry, index) => (
+                          <span
+                            key={`${entry.name}-${index}`}
+                            style={entry.overLimit ? { color: "#c0392b" } : null}
+                          >
+                            {entry.name}
+                            {index < names.length - 1 ? ", " : ""}
+                          </span>
+                        ))}{" "}
+                        absent(s)
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  function renderMonthlyCalendar() {
+    const days = getMonthDays(monthStart);
+    return (
+      <div style={{ marginTop: 15 }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: 10,
+            alignItems: "center",
+          }}
+        >
+          <button onClick={() => changeMonth(-1)}>← Mois précédent</button>
+          <strong>
+            {monthStart.toLocaleString("fr-FR", { month: "long", year: "numeric" })}
+          </strong>
+          <button onClick={() => changeMonth(1)}>Mois suivant →</button>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: `120px repeat(${days.length}, 1fr)`,
+            gap: 4,
+            border: "1px solid #ccc",
+            borderRadius: 8,
+            padding: 6,
+            overflowX: "auto",
+          }}
+        >
+          <div></div>
+          {days.map((d) => (
+            <div
+              key={formatDate(d)}
+              style={{ textAlign: "center", fontWeight: "bold" }}
+            >
+              {d.getDate()}
+            </div>
+          ))}
+
+          {sectors.map((sec) => (
+            <React.Fragment key={`month-row-${sec}`}>
+              <div
+                style={{
+                  fontWeight: "bold",
+                  borderTop: "1px solid #eee",
+                  paddingTop: 4,
+                }}
+              >
+                Secteur {sec}
+              </div>
+              {days.map((d) => {
+                const key = formatDate(d);
+                const names = (absenceMap[key] && absenceMap[key][sec]) || [];
+                const isConflict = names.length >= 2;
+                return (
+                  <div
+                    key={`month-cell-${sec}-${key}`}
+                    style={{
+                      borderTop: "1px solid #eee",
+                      padding: 4,
+                      fontSize: 12,
+                      minHeight: 36,
+                      backgroundColor: isConflict
+                        ? "rgba(240, 107, 95, 0.2)"
+                        : "transparent",
+                      borderLeft: isConflict
+                        ? "2px solid rgba(240, 107, 95, 0.6)"
+                        : "2px solid transparent",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        fontSize: 11,
+                        marginBottom: 2,
+                        color: "#1f3864",
+                      }}
+                    >
+                      <span
+                        style={{
+                          border: "1px solid #cbd5e1",
+                          borderRadius: 10,
+                          padding: "1px 6px",
+                          background: "#f8fafc",
+                        }}
+                        title="Disponibles"
+                      >
+                        {typeof sectorTotals[sec] === "number"
+                          ? Math.max(sectorTotals[sec] - names.length, 0)
+                          : "-"}
+                      </span>
+                    </div>
                     {names.length === 0 ? (
                       <span style={{ color: "#888" }}>Tous présents</span>
                     ) : (
@@ -934,6 +1120,17 @@ function AdminDashboard({ token, onLogout }) {
           }}
         >
           Vue calendrier (hebdomadaire)
+        </button>
+        <button
+          onClick={() => setViewMode("month")}
+          style={{
+            padding: "6px 12px",
+            borderRadius: 4,
+            border:
+              viewMode === "month" ? "2px solid black" : "1px solid #ccc",
+          }}
+        >
+          Vue calendrier (mensuel)
         </button>
         <button
           onClick={() => setViewMode("cumules")}
@@ -1041,6 +1238,7 @@ function AdminDashboard({ token, onLogout }) {
       )}
 
       {viewMode === "calendar" && renderWeeklyCalendar()}
+      {viewMode === "month" && renderMonthlyCalendar()}
 
       {viewMode === "cumules" && (
         <>
