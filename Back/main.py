@@ -153,7 +153,7 @@ def _read_employees_from_excel() -> List[Dict]:
         solde = _safe_int(row[col.get("Solde", -1)]) if "Solde" in col else 0
         if solde == 0 and acquis:
             solde = acquis - cumules
-        _write_solde_to_excel(f\"{prenom} {nom}\", solde)
+        _write_solde_to_excel(f"{prenom} {nom}", solde)
         tel = str(row[col["Telephone"]]).strip() if "Telephone" in col and row[col["Telephone"]] else None
 
         employees.append({
