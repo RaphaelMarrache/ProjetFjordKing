@@ -153,6 +153,7 @@ def _read_employees_from_excel() -> List[Dict]:
         solde = _safe_int(row[col.get("Solde", -1)]) if "Solde" in col else 0
         if solde == 0 and acquis:
             solde = acquis - cumules
+        _write_solde_to_excel(f\"{prenom} {nom}\", solde)
         tel = str(row[col["Telephone"]]).strip() if "Telephone" in col and row[col["Telephone"]] else None
 
         employees.append({
@@ -165,6 +166,26 @@ def _read_employees_from_excel() -> List[Dict]:
             "telephone": tel,
         })
     return employees
+
+
+
+def _write_solde_to_excel(full_name: str, solde: int) -> None:
+    if not EXCEL_FILE.exists():
+        return
+    wb = openpyxl.load_workbook(EXCEL_FILE)
+    ws = wb.active
+    headers = [str(c.value).strip() if c.value else "" for c in ws[1]]
+    col = {h: i for i, h in enumerate(headers)}
+    if "Solde" not in col:
+        return
+    for r in range(2, ws.max_row + 1):
+        nom = str(ws.cell(row=r, column=col["Nom"] + 1).value or "").strip()
+        prenom = str(ws.cell(row=r, column=col["Prenom"] + 1).value or "").strip()
+        if f"{prenom} {nom}".strip().lower() == full_name.strip().lower():
+            ws.cell(row=r, column=col["Solde"] + 1).value = int(solde)
+            wb.save(EXCEL_FILE)
+            _upload_excel_to_drive()
+            return
 
 def _ensure_employees_loaded():
     global _employees_cache, _employees_mtime

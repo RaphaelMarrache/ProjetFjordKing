@@ -389,7 +389,7 @@ function WorkerArea({ worker }) {
   return (
     <div>
       <p style={{ textAlign: "center" }}>
-        Connecté en tant que <b>{worker.full_name}</b> (secteur {worker.sector})
+        Connecté en tant que <b>{worker.full_name}</b> (secteur {worker.sector} | solde {worker.solde})
       </p>
 
       <div
